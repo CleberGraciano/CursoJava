@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  template="/templates/modelo.xhtml">
+	  
+	<ui:define name="conteudo">
+	
+	<h:form id="formListagem">
+	<p:panel header="Funcionarios - Listagem">
+		<p:dataTable emptyMessage="Nenhum registro encontrado"
+		paginator="true" id="tabela" value="#{funcionarioBean.funcionarios}" var="funcionario" rows="4" paginatorPosition="top">
+		<f:facet name="header">
+				<p:commandButton value="Novo" oncomplete="PF('dialogo').show();" actionListener="#{funcionarioBean.novo}" update=":mensagem  :formCadastro:painel">
+		<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+		</p:commandButton>
+		</f:facet>
+		
+		<p:column headerText="Nome" sortBy="#{funcionario.pessoa.nome}" filterBy="#{funcionario.pessoa.nome}">
+			
+			<h:outputText value="#{funcionario.pessoa.nome}"/>
+		
+		</p:column>
+		
+		<p:column headerText="CPF" sortBy="#{funcionario.pessoa.cpf}" filterBy="#{funcionario.pessoa.cpf}">
+		
+			<h:outputText value="#{funcionario.pessoa.cpf}"/>
+		
+		</p:column>
+		
+		<p:column headerText="CTPS" sortBy="#{funcionario.carteiraTrabalho}" filterBy="#{funcionario.carteiraTrabalho}">
+		
+			<h:outputText value="#{funcionario.carteiraTrabalho}"/>
+		
+		</p:column>
+
+		<p:column headerText="Data Admissão" sortBy="#{funcionario.dataAdmissao}" filterBy="#{funcionario.dataAdmissao}">
+			
+			<h:outputText value="#{funcionario.dataAdmissao}">
+			<f:convertDateTime locale="pt_BR"/>
+			</h:outputText>
+		
+		</p:column>
+		
+		
+		<p:column headerText="Opções">
+		
+		
+					<p:commandButton icon="ui-icon-trash" actionListener="#{funcionarioBean.excluir}" update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"	message="Deseja excluir o Funcionario?" icon="ui-icon-alert" />
+						<f:attribute value="#{funcionario}" name="funcionarioSelecionado" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil" actionListener="#{funcionarioBean.editar}" update=":mensagem :formCadastro:painel" oncomplete="PF('dialogo').show();">
+						<f:attribute value="#{funcionario}" name="funcionarioSelecionado" />
+						<f:actionListener type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />	
+					</p:commandButton>
+		
+		</p:column>	
+		
+			
+		</p:dataTable>	
+		
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button" 	styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+		
+	</p:panel>
+	</h:form>
+	
+	
+	<p:dialog header="Funcionarios - Cadastro" widgetVar="dialogo" draggable="false" resizable="false" modal="true" closable="false">
+		<h:form  id="formCadastro">
+	<h:panelGrid columns="2" id="painel" >
+	
+	
+		<p:outputLabel value="Pessoa:" for="pessoa"/>
+			<p:selectOneMenu  id="pessoa" value="#{funcionarioBean.funcionario.pessoa}" required="true" requiredMessage="O campo pessoa é Obrigatório" filter="true" converter="omnifaces.SelectItemsConverter">
+			<f:selectItem noSelectionOption="true" itemLabel="Selecione uma Pessoa"/>
+			<f:selectItems value="#{funcionarioBean.pessoas}" var="pessoa" itemValue="#{pessoa}" itemLabel="#{pessoa.nome} - #{pessoa.cpf}"/>
+			</p:selectOneMenu>
+		
+		
+		<p:outputLabel value="Carteira de Trabalho" for="carteira"/>
+		<p:inputText maxlength="30" size="50" value="#{funcionarioBean.funcionario.carteiraTrabalho}" required="true" id="carteira" requiredMessage="Campo Carteira de Trabalho Vazio"/>
+		
+		<p:outputLabel value="Data Admissão:" for="dataAdmissao"/>
+		<p:calendar value="#{funcionarioBean.funcionario.dataAdmissao}" locale="pt_BR" id="dataAdmissao" required="true" requiredMessage="Informe uma data" size="5"/>
+		
+		
+	</h:panelGrid>
+	<h:panelGrid columns="2">
+		<p:commandButton value="Salvar" update=":mensagem :formCadastro:painel :formListagem:tabela" actionListener="#{funcionarioBean.salvar}"/>
+		<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();"/>
+	</h:panelGrid>
+	</h:form>
+	</p:dialog>
+	
+	</ui:define>
+</ui:composition>
+
